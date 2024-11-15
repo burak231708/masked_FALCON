@@ -111,14 +111,5 @@ int main(void){
     printf("res1  = %lu\n", res1);
     print_binary_form(res1);
 
-
-    // b128 = -(1UL);//(1UL<<63);
-    // Mult128(&c128, &d128, a128, b128);
-
-    // print_binary_form(a128);
-    // print_binary_form(b128);
-    // print_binary_form(c128);
-    // print_binary_form(d128);
-
     return 0;
 }
