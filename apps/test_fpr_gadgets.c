@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "chenchen_gadgets.h"
+#include "fpr_gadgets.h"
 #include "gadgets.h"
 #include "utils.h"
 
@@ -23,7 +23,7 @@ int main(void){
     //uint64_t a128, b128, c128, d128;
 
 
-    printf("-------------------------------test_Chenchen_Gadgets---------------------------------\n");
+    printf("-------------------------------test_FPR_Gadgets---------------------------------\n");
     printf("\n");
 
     printf("\n                    SecOr  :\n");
