@@ -22,13 +22,13 @@ endif()
 #test projet 
 project(test_utils)
 project(test_gadgets)
-project(test_chenchen_gadgets)
+project(test_fpr_gadgets)
 project(test_secfpr)
 
 project(test_final)
 
 
-set(GADGETS_SOURCES src/utils.c src/gadgets.c src/chenchen_gadgets.c src/chenchen_modify.c src/secfpr.c)
+set(GADGETS_SOURCES src/utils.c src/gadgets.c src/fpr_gadgets.c src/fpr_modify.c src/secfpr.c)
 
 include_directories(include)
 
@@ -44,8 +44,8 @@ target_link_libraries(test_utils gadgets m)
 add_executable(test_gadgets apps/test_gadgets.c)
 target_link_libraries(test_gadgets gadgets m)
 
-add_executable(test_chenchen_gadgets apps/test_chenchen_gadgets.c)
-target_link_libraries(test_chenchen_gadgets gadgets m)
+add_executable(test_fpr_gadgets apps/test_fpr_gadgets.c)
+target_link_libraries(test_fpr_gadgets gadgets m)
 
 add_executable(test_secfpr apps/test_secfpr.c)
 target_link_libraries(test_secfpr gadgets m)
