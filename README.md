@@ -9,7 +9,7 @@ Masked implementation of the FALCON post-quantum signature in C for computers.
 - [Structure](#structure)
 ## Description
 
-This project propose a solution to mask FALCON. This work is based on https://tches.iacr.org/index.php/TCHES/article/view/11428. It is written in C.
+This project propose a masking solution to protect the FALCON signature from side-channel opponents. It is written in C for computer.
 
 ## Installation
 
@@ -67,20 +67,20 @@ name must be replace by one of the following test :
 
 This work is divided into five sections :
 - **utils** : Utility functions.
-- **gadgets** : Secure gadgets used by Chen and Chen.
+- **gadgets** : Generic secure gadgets.
    - SecAnd;
    - SecAdd;
    - SecMul;
    - ...
-- **chenchen_gadgets** : Secure gadgets from Chen and Chen.
+- **fpr_gadgets** : Secure gadgets for floating-point addition and multiplication.
    - SecNonZero;
    - SecOr;
    - SecFprUrsh;
    - SecFpr;
    - SecFprAdd;
    - SecFprMul.
-- **chenchen_modify** : Modified Chen and Chen's gadgets to implement secfpr functions.
-- **secfpr** : The main contribution.
+- **fpr_modify** : Modified gadgets to implement secfpr functions.
+- **secfpr** : The main contribution: secure gadgets to perform the floor and the inverse, and their application to the FALCON functions
    - SecFprFloor;
    - SecFprTrunc;
    - SecFprInv;
