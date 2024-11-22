@@ -1,8 +1,8 @@
 #ifndef SECFPR_H
 #define SECFPR_H
 
-#include <stddef.h> // pour size_t (à voir si on en a vraiment besoin)
-#include <stdint.h> //integer type
+#include <stddef.h>
+#include <stdint.h>
 
 #include "gadgets.h"
 
