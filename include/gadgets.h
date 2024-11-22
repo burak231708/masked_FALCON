@@ -1,8 +1,8 @@
 #ifndef GADGETS_H
 #define GADGETS_H
 
-#include <stddef.h> // pour size_t (à voir si on en a vraiment besoin)
-#include <stdint.h> //integer type
+#include <stddef.h> 
+#include <stdint.h> 
 
 
 #define MASKORDER 1UL
