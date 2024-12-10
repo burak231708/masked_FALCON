@@ -58,8 +58,7 @@ After compiling, you can run the project with the following command:
 name must be replace by one of the following test : 
 - test_utils
 - test_gadgets
-- test_chenchen_gadgets
-- test_chenchen_modify
+- test_fpr_gadgets
 - test_secfpr
 - test_final
 
