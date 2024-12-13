@@ -4,7 +4,7 @@ if (MSVC)
     # warning level 4
     add_compile_options(/W4)
 else()
-    add_compile_options(-O1 -Wall -Wextra -Wpedantic -Werror -Wformat=2 -ftrapv 
+    add_compile_options(-O1 -Wall -Wextra -Wpedantic -Werror -Wformat=2 -ftrapv -Werror=stringop-overflow
     -fstack-protector-strong -Winit-self 
     #-fPIE -Wdate-time -frandom-seed=0
     -Wdeclaration-after-statement
