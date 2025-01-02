@@ -122,16 +122,21 @@ SecFprFloor(maskedb_t out, maskedb_t in){
         sx[i] = in[i]>>63;
     }
     mx[0] += 1UL << 52;
+
     RefreshMasks(mx, MASKSIZE);
-    B2A(ex, exp, (1<<16), MASKSIZE);
+    B2A(ex, exp, (1UL<<16), MASKSIZE);
+
+    for (i = 0; i<MASKSIZE; i++) eout[i] = ex[i];
 //PART 2 : Check if e-1023 is positive or not
     for(i = 0; i<MASKSIZE; i++){
         cx[i] = ex[i];
     } 
     cx[0] = ex[0] - 1023;
+
     RefreshXOR_64(ex, ex, MASKSIZE);
     RefreshXOR_64(sx, sx, MASKSIZE);
     A2B(c, cx, 1<<16);
+
     for(i = 0; i<MASKSIZE; i++){
         c[i] = (c[i]>>15)&1;
     }
@@ -139,9 +144,11 @@ SecFprFloor(maskedb_t out, maskedb_t in){
         c0[j] = -c[j];
     }
     c0[0] = ~c0[0];
+
     SecAnd(mout, c0, mx, MASKSIZE); 
-    for (i = 0; i<MASKSIZE; i++) eout[i] = exp[i];
+    
     for (i = 0; i<MASKSIZE; i++) sout[i] = sx[i];
+    
 //PART 3 : Check if e-1023 is superior than 52
     cx[0] = cx[0] - 52;
     A2B(c, cx, 1<<16);
@@ -152,15 +159,20 @@ SecFprFloor(maskedb_t out, maskedb_t in){
     }
     SecAnd(c, c, cp, MASKSIZE);
     B2A(cx, c, 1<<16, MASKSIZE);
+
 //PART 4 : SecFprUrsh
     for (i = 0; i<MASKSIZE; i++){
         cd[i] = (-(cx[i]));
     } 
+
     SecFprUrshFloor(mout,Int_test, mout, cd);
+
     SecNonZeroB(b, Int_test);
     SecAnd(cs, b, sout, MASKSIZE);
     SecAdd(mout, mout, cs,  MASKSIZE);
+  
     for (i = 0; i<MASKSIZE; i++) eout[i] += cd[i];
+
 //PART 5 : Normalization
     SecFprNorm64(mout, eout, 1<<16);
     for (i = 0; i<MASKSIZE; i++){
@@ -310,6 +322,10 @@ SecFprTrunc(maskedb_t out, maskedb_t in){
     mx[0] += 1UL << 52;
     RefreshMasks(mx, MASKSIZE);
     B2A(ex, exp, (1<<16), MASKSIZE);
+
+    for (i = 0; i<MASKSIZE; i++){
+        eout[i] = ex[i];
+    } 
 //PART 2 : Check if e-1023 is positive or not
     for(i = 0; i<MASKSIZE; i++){
         cx[i] = ex[i];
@@ -330,9 +346,7 @@ SecFprTrunc(maskedb_t out, maskedb_t in){
     RefreshMasks(c0,MASKSIZE);
 
     SecAnd(mout, c0, mx, MASKSIZE); 
-    for (i = 0; i<MASKSIZE; i++){
-        eout[i] = ex[i];
-    } 
+    
     for (i = 0; i<MASKSIZE; i++){
         sout[i] = sx[i];
     }
@@ -396,6 +410,7 @@ SecApproxExp(maskedb_t out, maskedb_t x, maskedb_t ccs)
 {
     size_t u, i;
     maskedb_t z, yz, ymask, cmask;
+    //uint64_t res;
     uint64_t Cp[] = {
 		0x4211D0460E8C0000u,
 		0x424B2A467E030000u,
@@ -418,10 +433,19 @@ SecApproxExp(maskedb_t out, maskedb_t x, maskedb_t ccs)
     ymask[0] = Cp[0];
 
     SecFprScalPtwo(z, x, 63);
-    SecFprTrunc(z, z);
+    // printf("z = ");
+    //     UnmaskB(&res,z);
+    //     print_binary_form(res);
+    SecFprFloor(z, z);
+    // printf("z = ");
+    //     UnmaskB(&res,z);
+    //     print_binary_form(res);
 
     for (u = 1; u < 13; u ++) {
         SecFprMul(yz, z, ymask);
+        // printf("yz = ");
+        // UnmaskB(&res,yz);
+        // print_binary_form(res);
         SecFprDivPtwo(yz, yz, 63);
 
         for (i = 0; i<MASKSIZE; i++) cmask[i] = 0;
@@ -429,10 +453,13 @@ SecApproxExp(maskedb_t out, maskedb_t x, maskedb_t ccs)
         yz[0] = yz[0] ^ (1UL<<63);
 
         SecFprAdd(ymask,yz,cmask);
+        // UnmaskB(&res,ymask);
+        // print_binary_form(res);
+        // printf("\n");
 	}
 
     SecFprScalPtwo(z, ccs, 63);
-    SecFprTrunc(z,z);
+    SecFprFloor(z,z);
     SecFprMul(ymask, ymask, z);
     SecFprDivPtwo(out, ymask, 63);
 }
@@ -456,7 +483,6 @@ SecFprBerExp(maskedb_t out, maskedb_t x, maskedb_t ccs, maskedb_t alea){
     maskeda_t cs;
     maskedb_t mz;
     uint64_t counter = 64;
-    uint64_t counter2 = 64;
     uint64_t w = 0;
     uint64_t res;
 
@@ -464,6 +490,7 @@ SecFprBerExp(maskedb_t out, maskedb_t x, maskedb_t ccs, maskedb_t alea){
     MaskB(ln2, fpr_ln2);
     SecFprMul(s, inv_ln2, x);
     SecFprFloor(s,s);
+
     SecNonZeroB(stest,s);
     SecFprMul(r,ln2,s);
     SecNonZeroB(b, r);
@@ -471,6 +498,7 @@ SecFprBerExp(maskedb_t out, maskedb_t x, maskedb_t ccs, maskedb_t alea){
         r[i] = r[i]^(b[i]<<63);
     }
     SecFprAdd(r,x,r);
+
     for (i = 0; i<MASKSIZE; i++){
         es[i] = ((s[i]<<1)>>53);
     } 
@@ -486,10 +514,15 @@ SecFprBerExp(maskedb_t out, maskedb_t x, maskedb_t ccs, maskedb_t alea){
     b[0] = ~b[0];
     SecAnd(news, news, b, MASKSIZE);
     SecAdd(s, s, news, MASKSIZE);
+
     SecApproxExp(z, r, ccs);
+
     MaskB(one, 0xBFF0000000000000); 
     SecFprScalPtwo(z, z, 1);
+
     SecFprAdd(z,z,one);
+
+
     esa[0] -= 46;
     for (i = 0; i<MASKSIZE; i++){ 
         cs[i] = -(esa[i]);
@@ -497,6 +530,7 @@ SecFprBerExp(maskedb_t out, maskedb_t x, maskedb_t ccs, maskedb_t alea){
     for (i = 0; i<MASKSIZE; i++) {
         s[i] = ((s[i]&((0xfffffffffffffUL)))+ (stest[i]<<52));
     }
+
     SecFprUrshTrunc(s, s, cs);
     B2A(cs, s, 1<<16, MASKSIZE);
 
@@ -508,9 +542,8 @@ SecFprBerExp(maskedb_t out, maskedb_t x, maskedb_t ccs, maskedb_t alea){
     for (i = 0; i<MASKSIZE; i++) {
         mz[i] <<= 10;
     }
-    SecFprUrshTrunc(mz, mz, cs);
 
-    UnmaskB(&res, mz);
+    SecFprUrshTrunc(mz, mz, cs);
 
     do{
         counter -= 8;
@@ -520,7 +553,7 @@ SecFprBerExp(maskedb_t out, maskedb_t x, maskedb_t ccs, maskedb_t alea){
         temp1[0] = -temp1[0];
 
         for (i = 0; i<MASKSIZE; i++){
-            temp2[i] = (alea[i]>>counter2)&0xff;
+            temp2[i] = (alea[i]>>counter)&0xff;
         }
        
         SecAdd(wb, temp1, temp2, MASKSIZE);
