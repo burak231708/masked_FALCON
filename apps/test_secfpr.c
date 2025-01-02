@@ -38,7 +38,7 @@ int main(void){
     printf("res_m = %lu\n", res_m1);
     print_binary_form(res_m1);
 
-    printf("\nTest Trunc / Floor\n");
+    printf("\nTest Floor\n");
 
     print_binary_form(0x4016000000000000);
     res1 = 0x4016000000000000;
